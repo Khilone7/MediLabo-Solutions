@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MédiLabo - Détail patient</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <h1>🏥 MédiLabo Solutions</h1>
+</header>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2 th:text="${patient.firstName + ' ' + patient.lastName}">Nom du patient</h2>
+            <div class="risk-panel"
+                 th:classappend="${risk == 'NONE'} ? 'risk-panel-none' : (${risk == 'BORDERLINE'} ? 'risk-panel-borderline' : (${risk == 'IN_DANGER'} ? 'risk-panel-danger' : 'risk-panel-early'))">
+                <span class="risk-panel-label">Risque diabète</span>
+                <span class="risk-panel-value"
+                      th:text="${risk == 'NONE'} ? 'Aucun risque' : (${risk == 'BORDERLINE'} ? 'Limite' : (${risk == 'IN_DANGER'} ? 'En danger' : 'Apparition précoce'))">
+                </span>
+            </div>
+        </div>
+        <div class="field">
+            <label>Date de naissance</label>
+            <span th:text="${patient.birthDate}"></span>
+        </div>
+        <div class="field">
+            <label>Genre</label>
+            <span th:text="${patient.gender == 'M'} ? 'Homme' : 'Femme'"></span>
+        </div>
+        <div class="field">
+            <label>Adresse</label>
+            <span th:text="${patient.address ?: 'Non renseignée'}"></span>
+        </div>
+        <div class="field">
+            <label>Téléphone</label>
+            <span th:text="${patient.phoneNumber ?: 'Non renseigné'}"></span>
+        </div>
+        <div class="actions">
+            <a th:href="@{/patients/{id}/edit(id=${patient.id})}" class="btn btn-primary">Modifier</a>
+            <a th:href="@{/patients}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+    </div>
+
+    <!-- Section notes -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Notes du médecin</h3>
+        </div>
+
+        <!-- Liste des notes existantes -->
+        <div th:if="${notes.empty}" class="field">
+            <span>Aucune note pour ce patient.</span>
+        </div>
+        <div th:each="note : ${notes}" class="note-item">
+            <div class="note-row">
+                <div class="note-row-content">
+                    <span class="note-date" th:text="${note.date}"></span>
+                    <span th:text="${note.content}"></span>
+                </div>
+                <form th:action="@{/patients/{id}/notes/{noteId}/delete(id=${patient.id}, noteId=${note.id})}"
+                      method="post" class="note-actions">
+                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formulaire ajout note -->
+        <form th:action="@{/patients/{id}/notes(id=${patient.id})}" method="post">
+            <div class="field">
+                <label>Nouvelle note</label>
+                <textarea name="content" rows="4" placeholder="Saisissez votre observation..."></textarea>
+            </div>
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Ajouter la note</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

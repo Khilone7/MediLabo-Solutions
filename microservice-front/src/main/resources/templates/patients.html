@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MédiLabo - Patients</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <h1>🏥 MédiLabo Solutions</h1>
+    <span>Dr. Doctor</span>
+</header>
+<div class="container">
+    <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div class="top-bar">
+        <h2>Liste des patients</h2>
+        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un patient..."/>
+        <a th:href="@{/patients/add}" class="btn btn-primary">+ Nouveau patient</a>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Date de naissance</th>
+            <th>Adresse</th>
+            <th>Numéro de téléphone</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="patient : ${patients}">
+            <td th:text="${patient.lastName}"></td>
+            <td th:text="${patient.firstName}"></td>
+            <td th:text="${patient.birthDate}"></td>
+            <td th:text="${patient.address}"></td>
+            <td th:text="${patient.phoneNumber}"></td>
+            <td class="actions">
+                <a th:href="@{/patients/{id}(id=${patient.id})}" class="btn btn-sm btn-secondary">Voir</a>
+                <a th:href="@{/patients/{id}/edit(id=${patient.id})}" class="btn btn-sm btn-primary">Modifier</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script th:src="@{/js/patients.js}"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MédiLabo - Formulaire patient</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header>
+    <h1>🏥 MédiLabo Solutions</h1>
+</header>
+<div class="container">
+    <div class="card">
+        <h2 th:text="${patient.id == null} ? 'Nouveau patient' : 'Modifier le patient'">Formulaire</h2>
+        <form id="patient-form" th:action="${patient.id == null} ? @{/patients/add} : @{/patients/{id}/edit(id=${patient.id})}" th:object="${patient}" method="post">
+
+            <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+            <div class="form-group">
+                <label class="required">Prénom</label>
+                <input type="text" th:field="*{firstName}" placeholder="Prénom du patient" required/>
+            </div>
+            <div class="form-group">
+                <label class="required">Nom</label>
+                <input type="text" th:field="*{lastName}" placeholder="Nom du patient" required/>
+            </div>
+            <div class="form-group">
+                <label class="required">Date de naissance</label>
+                <input type="date" th:field="*{birthDate}" required/>
+            </div>
+            <div class="form-group">
+                <label class="required">Genre</label>
+                <select th:field="*{gender}" required>
+                    <option value="">-- Sélectionner --</option>
+                    <option value="M">Homme</option>
+                    <option value="F">Femme</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" th:field="*{address}" placeholder="Adresse postale"/>
+                <span class="hint">Optionnel</span>
+            </div>
+            <div class="form-group">
+                <label>Téléphone</label>
+                <input type="text" th:field="*{phoneNumber}" placeholder="000-000-0000" pattern="\d{3}-\d{3}-\d{4}"/>
+                <span class="hint">Optionnel</span>
+            </div>
+        </form>
+        <form id="delete-form" th:action="@{/patients/{id}/delete(id=${patient.id})}" method="post" th:if="${patient.id != null}">
+        </form>
+        <div class="actions">
+            <button type="submit" form="patient-form" class="btn btn-primary">Enregistrer</button>
+            <a th:href="@{/patients}" class="btn btn-secondary">Annuler</a>
+            <button type="submit" form="delete-form" class="btn btn-danger btn-ml-auto" th:if="${patient.id != null}">Supprimer</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

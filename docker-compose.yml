@@ -1,0 +1,83 @@
+services:
+  mysql-patient:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: medilabo_patient
+    ports:
+      - "3307:3306"
+    networks:
+      - medilabo-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:6
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - "27017:27017"
+    networks:
+      - medilabo-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  patient:
+    build: ./microservice-patient
+    ports:
+      - "8081:8081"
+    depends_on:
+      mysql-patient:
+        condition: service_healthy
+    networks:
+      - medilabo-network
+
+  notes:
+    build: ./microservice-notes
+    ports:
+      - "8083:8083"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - medilabo-network
+
+  assessment:
+    build: ./microservice-assessment
+    ports:
+      - "8084:8084"
+    depends_on:
+      - patient
+      - notes
+    networks:
+      - medilabo-network
+
+  front:
+    build: ./microservice-front
+    ports:
+      - "8082:8082"
+    networks:
+      - medilabo-network
+
+  gateway:
+    build: ./microservice-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - patient
+      - notes
+      - assessment
+      - front
+    networks:
+      - medilabo-network
+
+networks:
+  medilabo-network:
+    driver: bridge
